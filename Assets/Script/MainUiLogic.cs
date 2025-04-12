@@ -1,9 +1,12 @@
 using System;
 using System.Collections;
+using Script.Login;
+using Script.SignUp;
 using Script.Util;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEngine.Mathf;
 
 namespace Script
 {
@@ -13,7 +16,7 @@ namespace Script
         SignUp
     }
 
-    [RequireComponent(typeof(Switcher))]
+    [RequireComponent(typeof(Switcher), typeof(LoginLogic), typeof(SignUpLogic))]
     public class MainUiLogic : MonoBehaviour
     {
         [Header("Audio")] [SerializeField] private AudioSource backgroundMusic;
@@ -26,48 +29,31 @@ namespace Script
         private Button signPaneBtn;
 
         [SerializeField] private Button loginPaneBtn;
+        [SerializeField] private LoginLogic loginLogic;
+        [SerializeField] private SignUpLogic signUpLogic;
 
-        [Header("Login")] [SerializeField] private TMP_InputField loginEmailInputField;
-        [SerializeField] private TMP_InputField loginPasswordInputField;
-        [SerializeField] private Button loginButton;
-        [SerializeField] private UIFrame loginPane;
-        [SerializeField] private Toggle toggleAutoLogin;
 
-        [Header("Signup")] [SerializeField] private UIFrame signUpPane;
-        [SerializeField] private TMP_InputField signEmailInputField;
-        [SerializeField] private TMP_InputField signPasswordInputField;
-        [SerializeField] private TMP_InputField signNameInputField;
-        [SerializeField] private Toggle signToggleAutoLogin;
-        [SerializeField] private Button signUpButton;
 
         private void Awake()
         {
             startButton.onClick.AddListener(StartApp);
-            signUpButton.onClick.AddListener(SignUpAccount);
             signPaneBtn.onClick.AddListener(() => SwitchPane(EPane.SignUp));
             loginPaneBtn.onClick.AddListener(() => SwitchPane(EPane.Login));
         }
 
         private void SwitchPane(EPane signUp)
         {
-            loginPane.gameObject.SetActive(signUp == EPane.Login);
-            signUpPane.gameObject.SetActive(signUp == EPane.SignUp);
+            loginLogic.LoginPane.gameObject.SetActive(signUp == EPane.Login);
+            signUpLogic.SignUpPane.gameObject.SetActive(signUp == EPane.SignUp);
         }
 
-        private void SignUpAccount()
-        {
-            //Account.Account account = new Account.Account(signEmailInputField.text, signPasswordInputField.text,
-                //signNameInputField.text, signToggleAutoLogin.isOn);
-            
-            Account.Account account = new Account.Account("test@example.com", "password123", "JohnDoe", true);
-            JsonUtil.SaveAccountJson(account);
-        }
+
 
         private void StartApp()
         {
             GetComponent<Switcher>().SetUIState(UIState.SignLogin);
-            signUpPane.gameObject.SetActive(false);
-            loginPane.gameObject.SetActive(true);
+            signUpLogic.SignUpPane.gameObject.SetActive(false);
+            loginLogic.LoginPane.gameObject.SetActive(true);
         }
 
         private void Start()
@@ -86,21 +72,20 @@ namespace Script
 
         IEnumerator FadeIn(AudioSource audioSource, float duration)
         {
-            float startVolume = 0.0f;
-            float targetVolume = 1.0f;
-            float currentTime = 0.0f;
+            var startVolume = 0.0f;
+            var targetVolume = 1.0f;
+            var currentTime = 0.0f;
 
             audioSource.volume = startVolume;
 
             while (currentTime < duration)
             {
                 currentTime += Time.deltaTime;
-                audioSource.volume = Mathf.Lerp(startVolume, targetVolume, currentTime / duration);
+                audioSource.volume = Lerp(startVolume, targetVolume, currentTime / duration);
                 yield return null;
             }
 
             audioSource.volume = targetVolume;
         }
-
     }
 }
