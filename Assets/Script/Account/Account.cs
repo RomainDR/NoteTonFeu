@@ -10,10 +10,13 @@ namespace Script.Account
         public string name { get; set; }
         public bool autoLogin { get; set; }
 
-        public Account(string mail, string password, string name, bool autoLogin)
+        /**
+         * Create an object of account. Password must be hashed !
+         */
+        public Account(string mail, string hashedPassword, string name, bool autoLogin = false)
         {
             this.mail = mail;
-            this.password = password;
+            this.password = hashedPassword;
             this.name = name;
             this.autoLogin = autoLogin;
         }

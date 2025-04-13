@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using Script.Login;
+using Script.Popup;
 using Script.SignUp;
 using Script.Util;
 using TMPro;
@@ -29,9 +30,9 @@ namespace Script
         private Button signPaneBtn;
 
         [SerializeField] private Button loginPaneBtn;
-        [SerializeField] private LoginLogic loginLogic;
-        [SerializeField] private SignUpLogic signUpLogic;
-
+        [ReadOnlyEditor] [SerializeField] private LoginLogic loginLogic;
+        [ReadOnlyEditor] [SerializeField] private SignUpLogic signUpLogic;
+        
 
 
         private void Awake()
@@ -39,21 +40,21 @@ namespace Script
             startButton.onClick.AddListener(StartApp);
             signPaneBtn.onClick.AddListener(() => SwitchPane(EPane.SignUp));
             loginPaneBtn.onClick.AddListener(() => SwitchPane(EPane.Login));
+            loginLogic = GetComponent<LoginLogic>();
+            signUpLogic = GetComponent<SignUpLogic>();
         }
 
         private void SwitchPane(EPane signUp)
         {
-            loginLogic.LoginPane.gameObject.SetActive(signUp == EPane.Login);
-            signUpLogic.SignUpPane.gameObject.SetActive(signUp == EPane.SignUp);
+            loginLogic.GetLoginPane().gameObject.SetActive(signUp == EPane.Login);
+            signUpLogic.GetSignUpPane().gameObject.SetActive(signUp == EPane.SignUp);
         }
-
-
-
+        
         private void StartApp()
         {
             GetComponent<Switcher>().SetUIState(UIState.SignLogin);
-            signUpLogic.SignUpPane.gameObject.SetActive(false);
-            loginLogic.LoginPane.gameObject.SetActive(true);
+            signUpLogic.GetSignUpPane().gameObject.SetActive(false);
+            loginLogic.GetLoginPane().gameObject.SetActive(true);
         }
 
         private void Start()
